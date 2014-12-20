@@ -1,0 +1,28 @@
+{
+	"name": "phpreq/phpreq",
+	"description": "Determine your PHP requirements",
+	"homepage": "https://phpreq.org",
+	"license": "AGPL-3.0",
+	"authors": [
+		{
+			"name": "Stuart Herbert",
+			"email": "stuart@stuartherbert.com",
+			"homepage": "http://www.stuartherbert.com",
+			"role": "Developer"
+		}
+	],
+	"support": {
+		"issues": "https://github.com/phpreq/phpreq/issues",
+		"source": "https://github.com/phpreq/phpreq/"
+	},
+	"require": {
+		"nikic/php-parser": "dev-master"
+	},
+	"require-dev": {
+		"mockery/mockery": "dev-master"
+	},
+	"autoload": {
+		"psr-0": { "PHPReq" : "src" }
+	},
+	"bin": ["bin/phpreq"]
+}
