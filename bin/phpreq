@@ -24,15 +24,17 @@
 // we use Composer for autoloading
 require_once(__DIR__ . "/../vendor/autoload.php");
 
-// we use Symfony's console to communicate with our user
-use Symfony\Component\Console\Application;
+// our main class
+use PHPReq\Console\Application;
 
 // the commands that we support
 use PHPReq\Console\ScanCommand;
 
 define('APP_NAME', 'phpreq');
 define('APP_VERSION', '0.1.0');
+define('APP_URL', "http://phpreq.org");
 
 $app = new Application(APP_NAME, APP_VERSION);
+$app->setUrl(APP_URL);
 $app->add(new ScanCommand);
 $app->run();
