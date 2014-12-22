@@ -17,7 +17,8 @@
 	},
 	"require": {
 		"nikic/php-parser": "dev-master",
-		"symfony/console": "~2.6"
+		"symfony/console": "~2.6",
+		"phpunit/phpunit": "~4.4"
 	},
 	"require-dev": {
 		"mockery/mockery": "dev-master"
