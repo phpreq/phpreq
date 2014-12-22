@@ -34,35 +34,42 @@ class ScanCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('demo:greet')
-            ->setDescription('Greet someone')
+            ->setName('scan')
+            ->setDescription('scan a codebase to discover requirements')
             ->addArgument(
-                'name',
-                InputArgument::OPTIONAL,
-                'Who do you want to greet?'
-            )
-            ->addOption(
-               'yell',
-               null,
-               InputOption::VALUE_NONE,
-               'If set, the task will yell in uppercase letters'
+                '<path>',
+                InputArgument::REQUIRED,
+                'where is the codebase to scan?'
             )
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $name = $input->getArgument('name');
-        if ($name) {
-            $text = 'Hello '.$name;
-        } else {
-            $text = 'Hello';
+        // make sure we're looking at a real project
+        $pathToScan = $input->getArgument('<path>');
+        $this->validatePath($pathToScan);
+    }
+
+    protected function validatePath($pathToScan)
+    {
+        // does the path to scan exist?
+        if (!is_dir($pathToScan)) {
+            $output->writeln("<error>path '{$pathToScan}' not found or is not a folder</error>");
+            exit(1);
         }
 
-        if ($input->getOption('yell')) {
-            $text = strtoupper($text);
-        }
+        // does the path contain a composer.json file?
+        $composerFilename = $this->getComposerFilename($pathToScan);
 
-        $output->writeln($text);
+        if (!file_exists($composerFilename)) {
+            $output->writeln("<error>file '{$composerFilename}' not found</error>");
+            exit(1);
+        }
+    }
+
+    protected function getComposerFilename($pathToScan)
+    {
+        return realpath($pathToScan . '/composer.json');
     }
 }
