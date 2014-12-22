@@ -1,2 +1,4 @@
+# please keep this file in alphabetical order
 composer.lock
 composer.phar
+vendor/
