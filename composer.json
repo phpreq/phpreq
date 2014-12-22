@@ -16,7 +16,8 @@
 		"source": "https://github.com/phpreq/phpreq/"
 	},
 	"require": {
-		"nikic/php-parser": "dev-master"
+		"nikic/php-parser": "dev-master",
+		"symfony/console": "~2.6"
 	},
 	"require-dev": {
 		"mockery/mockery": "dev-master"
