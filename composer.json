@@ -26,5 +26,8 @@
 	"autoload": {
 		"psr-0": { "PHPReq" : "src" }
 	},
+	"autoload-dev": {
+		"psr-0": { "PHPReq" : "tests/unit-tests" }
+	},
 	"bin": ["bin/phpreq"]
 }
