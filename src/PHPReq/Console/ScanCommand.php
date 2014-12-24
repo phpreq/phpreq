@@ -23,6 +23,10 @@
 
 namespace PHPReq\Console;
 
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use RegexIterator;
+
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -49,6 +53,14 @@ class ScanCommand extends Command
         // make sure we're looking at a real project
         $pathToScan = $input->getArgument('<path>');
         $this->validatePath($pathToScan);
+
+        $filenames = $this->findPhpFilesInFolder($pathToScan);
+        if (count($filenames) == 0) {
+            $output->writeln("<error>no PHP files found in '{$pathToScan}'");
+            exit(1);
+        }
+
+        var_dump($filenames);
     }
 
     protected function validatePath($pathToScan)
@@ -58,18 +70,25 @@ class ScanCommand extends Command
             $output->writeln("<error>path '{$pathToScan}' not found or is not a folder</error>");
             exit(1);
         }
-
-        // does the path contain a composer.json file?
-        $composerFilename = $this->getComposerFilename($pathToScan);
-
-        if (!file_exists($composerFilename)) {
-            $output->writeln("<error>file '{$composerFilename}' not found</error>");
-            exit(1);
-        }
     }
 
-    protected function getComposerFilename($pathToScan)
+    protected function findPhpFilesInFolder($folder)
     {
-        return realpath($pathToScan . '/composer.json');
+        // use the SPL to do the heavy lifting
+        $dirIter = new RecursiveDirectoryIterator($folder);
+        $recIter = new RecursiveIteratorIterator($dirIter);
+        $regIter = new RegexIterator($recIter, '/^.+\.php$/i', RegexIterator::GET_MATCH);
+
+        // what happened?
+        $filenames = [];
+        foreach ($regIter as $match) {
+            $filenames[] = $match[0];
+        }
+
+        // let's get the list into some semblance of order
+        sort($filenames);
+
+        // all done
+        return $filenames;
     }
 }
