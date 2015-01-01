@@ -43,11 +43,11 @@ class NodeInspector extends NodeVisitorAbstract
 		switch($className)
 		{
 			// classes
-			case "PhpParser\\Node\\Expr\\MethodCall":
+			case "PhpParser\Node\Expr\StaticCall":
 				// fqName is set by our ExpressionExpander
 				if (isset($node->fqName)) {
 					$name = $node->fqName;
-					$this->discovered["methods_called"][$name] = $name;
+					$this->discovered["classes_used"][$name] = $name;
 				}
 				break;
 

@@ -38,7 +38,7 @@ class ExpressionExpanderTest extends PHPUnit_Framework_TestCase
 		return file_get_contents($filename);
 	}
 
-    protected function traverseFile($name)
+    protected function traverseFile($name, $debug = false)
     {
         // go and get the file
         $parser = new Parser(new Emulative);
@@ -47,7 +47,11 @@ class ExpressionExpanderTest extends PHPUnit_Framework_TestCase
         // this is what we're going to do to our parse tree
         $treeTrav = new NodeTraverser();
         $treeTrav->addVisitor(new NameResolver);
-        $treeTrav->addVisitor(new ExpressionExpander);
+        $ee = new ExpressionExpander();
+        if ($debug) {
+        	$ee->enableDebug();
+        }
+        $treeTrav->addVisitor($ee);
 
         // let's see what's in there!
         $parseTree = $treeTrav->traverse($parseTree);
@@ -198,7 +202,6 @@ class ExpressionExpanderTest extends PHPUnit_Framework_TestCase
 	    // ----------------------------------------------------------------
 	    // perform the change
 
-		echo PHP_EOL . PHP_EOL;
 		$tree = $this->traverseFile("instantiates_namespaced_classname_name_in_variable.php");
 
 	    // ----------------------------------------------------------------
@@ -226,7 +229,6 @@ class ExpressionExpanderTest extends PHPUnit_Framework_TestCase
 	    // ----------------------------------------------------------------
 	    // perform the change
 
-		echo PHP_EOL . PHP_EOL;
 		$tree = $this->traverseFile("extends_global_classname.php");
 
 	    // ----------------------------------------------------------------
@@ -335,7 +337,6 @@ class ExpressionExpanderTest extends PHPUnit_Framework_TestCase
 	    // ----------------------------------------------------------------
 	    // perform the change
 
-		echo PHP_EOL . PHP_EOL;
 		$tree = $this->traverseFile("implements_global_interface.php");
 
 	    // ----------------------------------------------------------------
@@ -344,4 +345,34 @@ class ExpressionExpanderTest extends PHPUnit_Framework_TestCase
 		$actual = $this->extractFromTree($tree);
 		$this->assertEquals($expected, $actual);
 	}
+
+
+	/**
+	 * @covers PHPReq\Scanner\NodeInspector::leaveNode
+	 * @covers PHPReq\Scanner\ExpressionExpander::leaveNode
+	 * @covers PHPReq\Scanner\ExpressionExpander::expandStaticCall
+	 */
+	public function testCanDetectCallingStaticMethodGlobalClassname()
+	{
+	    // ----------------------------------------------------------------
+	    // setup your test
+
+		$expected = array(
+			"classes_used" => array (
+				"stdClass" => "stdClass"
+			),
+		);
+
+	    // ----------------------------------------------------------------
+	    // perform the change
+
+		$tree = $this->traverseFile("calls_static_method_global_classname.php");
+
+	    // ----------------------------------------------------------------
+	    // test the results
+
+		$actual = $this->extractFromTree($tree);
+		$this->assertEquals($expected, $actual);
+	}
+
 }

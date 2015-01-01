@@ -29,26 +29,35 @@ use PhpParser\NodeVisitorAbstract;
 class ExpressionExpander extends NodeVisitorAbstract
 {
 	private $phpReqNodesToExpand = array(
-		"PhpParser\\Node\\Expr\\MethodCall" => "expandMethodCall",
+		"PhpParser\\Node\\Expr\\StaticCall" => "expandStaticCall",
 		"PhpParser\\Node\\Expr\\New_"       => "expandNew",
 		"PhpParser\\Node\\Expr\\Assign"     => "trackVar",
 	);
 
 	private $trackedVars = array();
 
+	private $debugOutput = false;
+
 	public function leaveNode(Node $node)
 	{
 		$className = get_class($node);
-		echo "???: $className ";
-		//var_dump($node);
+		if ($this->debugOutput) {
+			var_dump($node);
+			echo "???: $className ";
+		}
 
 		// is this a node that we want to expand?
 		if (!isset($this->phpReqNodesToExpand[$className])) {
 			// no, it is not
-			echo "IGN" . PHP_EOL;
+			if ($this->debugOutput) {
+				echo "IGN" . PHP_EOL;
+			}
 			return;
 		}
-		echo "INS" . PHP_EOL;
+
+		if ($this->debugOutput) {
+			echo "INS" . PHP_EOL;
+		}
 
 		// at this point, we are looking at a node that we need to expand
 		//
@@ -60,8 +69,15 @@ class ExpressionExpander extends NodeVisitorAbstract
 		return $node;
 	}
 
-	public function expandMethodCall(Node $node)
+	public function expandStaticCall(Node $node)
 	{
+		// special case - nothing to expand
+		if (is_string($node->class)) {
+			$node->fqName = $node->class;
+		}
+		else if ($node->class instanceof \PhpParser\Node\Name) {
+			$node->fqName = $node->class->toString();
+		}
 
 	}
 
@@ -113,5 +129,15 @@ class ExpressionExpander extends NodeVisitorAbstract
 						$this->trackedVars[$name] = $node->expr->value;
 				}
 		}
+	}
+
+	public function enableDebug()
+	{
+		$this->debugOutput = true;
+	}
+
+	public function disableDebug()
+	{
+		$this->debugOutput = false;
 	}
 }
