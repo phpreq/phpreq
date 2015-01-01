@@ -43,7 +43,7 @@ class ExpressionExpander extends NodeVisitorAbstract
 	{
 		$className = get_class($node);
 		echo "???: $className ";
-		var_dump($node);
+		//var_dump($node);
 
 		// is this a node that we want to expand?
 		if (!isset($this->phpReqNodesToExpand[$className])) {

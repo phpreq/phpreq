@@ -59,6 +59,21 @@ class NodeInspector extends NodeVisitorAbstract
 				}
 				break;
 
+			case "PhpParser\\Node\\Stmt\\Class_":
+				// what does it extend?
+				if (isset($node->extends)) {
+					$name = $node->extends->toString();
+					$this->discovered["classes_used"][$name] = $name;
+				}
+
+				// what interfaces does it implement?
+				if (isset($node->implements)) {
+					foreach($node->implements as $implements) {
+						$name = $implements->toString();
+						$this->discovered["interfaces_used"][$name] = $name;
+					}
+				}
+
 			// functions
 			case "PhpParser\\Node\\Expr\\FuncCall":
 				if ($node->name instanceof \PhpParser\Node\Name) {

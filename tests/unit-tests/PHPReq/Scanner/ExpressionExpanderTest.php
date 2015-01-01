@@ -207,4 +207,33 @@ class ExpressionExpanderTest extends PHPUnit_Framework_TestCase
 		$actual = $this->extractFromTree($tree);
 		$this->assertEquals($expected, $actual);
 	}
+
+	/**
+	 * @covers PHPReq\Scanner\ExpressionExpander::leaveNode
+	 * @covers PHPReq\Scanner\ExpressionExpander::expandNew
+	 */
+	public function testCanDetectExtendsGlobalClassname()
+	{
+	    // ----------------------------------------------------------------
+	    // setup your test
+
+		$expected = array(
+			"classes_used" => array (
+				'stdClass' => 'stdClass'
+			),
+		);
+
+	    // ----------------------------------------------------------------
+	    // perform the change
+
+		echo PHP_EOL . PHP_EOL;
+		$tree = $this->traverseFile("extends_global_classname.php");
+
+	    // ----------------------------------------------------------------
+	    // test the results
+
+		$actual = $this->extractFromTree($tree);
+		$this->assertEquals($expected, $actual);
+	}
+
 }
