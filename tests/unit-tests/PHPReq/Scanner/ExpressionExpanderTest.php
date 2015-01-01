@@ -402,4 +402,32 @@ class ExpressionExpanderTest extends PHPUnit_Framework_TestCase
 		$actual = $this->extractFromTree($tree);
 		$this->assertEquals($expected, $actual);
 	}
+
+	/**
+	 * @covers PHPReq\Scanner\NodeInspector::leaveNode
+	 * @covers PHPReq\Scanner\ExpressionExpander::leaveNode
+	 * @covers PHPReq\Scanner\ExpressionExpander::expandStaticCall
+	 */
+	public function testCanDetectCallingStaticMethodNamespacedClassnameImplicitAlias()
+	{
+	    // ----------------------------------------------------------------
+	    // setup your test
+
+		$expected = array(
+			"classes_used" => array (
+				'PHPReq\Scanner\NodeInspector' => 'PHPReq\Scanner\NodeInspector'
+			),
+		);
+
+	    // ----------------------------------------------------------------
+	    // perform the change
+
+		$tree = $this->traverseFile("calls_static_method_namespaced_classname_implicit_alias.php");
+
+	    // ----------------------------------------------------------------
+	    // test the results
+
+		$actual = $this->extractFromTree($tree);
+		$this->assertEquals($expected, $actual);
+	}
 }
