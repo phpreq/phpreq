@@ -27,11 +27,20 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RegexIterator;
 
+use PhpParser\Parser;
+use PhpParser\Lexer\Emulative;
+use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitor\NameResolver;
+
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+
+ini_set('xdebug.max_nesting_level', 2000);
+ini_set('memory_limit', -1);
 
 class ScanCommand extends Command
 {
@@ -60,7 +69,20 @@ class ScanCommand extends Command
             exit(1);
         }
 
-        var_dump($filenames);
+        // we'll show a progress bar to our user
+        $output->writeln("<info>scanning PHP files ... please wait ...</info>");
+        $progress = new ProgressBar($output, count($filenames));
+        $progress->start();
+
+        // extract a list of what's in the files
+        foreach ($filenames as $filename) {
+            $this->parseFile($filename);
+            $progress->advance();
+        }
+
+        // all done
+        $progress->finish();
+        $output->writeln('');
     }
 
     protected function validatePath($pathToScan)
@@ -90,5 +112,17 @@ class ScanCommand extends Command
 
         // all done
         return $filenames;
+    }
+
+    protected function parseFile($filename)
+    {
+        // go and get the file
+        $parser = new Parser(new Emulative);
+        $parseTree = $parser->parse(file_get_contents($filename));
+
+        // what is inside it?
+        $treeTrav = new NodeTraverser();
+        $treeTrav->addVisitor(new NameResolver);
+        $parseTree = $treeTrav->traverse($parseTree);
     }
 }
