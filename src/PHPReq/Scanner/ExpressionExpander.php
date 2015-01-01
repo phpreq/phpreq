@@ -26,9 +26,6 @@ namespace PHPReq\Scanner;
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
 
-ini_set('xdebug.var_display_max_children', 20000);
-ini_set('xdebug.var_display_max_depth', 100);
-
 class ExpressionExpander extends NodeVisitorAbstract
 {
 	private $phpReqNodesToExpand = array(
