@@ -29,5 +29,5 @@
 use stdClass;
 use PHPReq\Scanner\NodeInspector;
 
-// namespaced class with alias
+// namespaced class with implicit alias
 $obj1 = new NodeInspector;

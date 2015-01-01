@@ -103,7 +103,7 @@ class ExpressionExpanderTest extends PHPUnit_Framework_TestCase
 	 * @covers PHPReq\Scanner\ExpressionExpander::leaveNode
 	 * @covers PHPReq\Scanner\ExpressionExpander::expandNew
 	 */
-	public function testCanDetectSimpleNamespacedClassname()
+	public function testCanDetectNamespacedClassnameImplicitAlias()
 	{
 	    // ----------------------------------------------------------------
 	    // setup your test
@@ -117,7 +117,7 @@ class ExpressionExpanderTest extends PHPUnit_Framework_TestCase
 	    // ----------------------------------------------------------------
 	    // perform the change
 
-		$tree = $this->traverseFile("namespaced_classname.php");
+		$tree = $this->traverseFile("namespaced_classname_implicit_alias.php");
 
 	    // ----------------------------------------------------------------
 	    // test the results
@@ -125,4 +125,30 @@ class ExpressionExpanderTest extends PHPUnit_Framework_TestCase
 		$actual = $this->extractFromTree($tree);
 		$this->assertEquals($expected, $actual);
 	}
-}
+
+	/**
+	 * @covers PHPReq\Scanner\ExpressionExpander::leaveNode
+	 * @covers PHPReq\Scanner\ExpressionExpander::expandNew
+	 */
+	public function testCanDetectNamespacedClassnameExplicitAlias()
+	{
+	    // ----------------------------------------------------------------
+	    // setup your test
+
+		$expected = array(
+			"classes_used" => array (
+				'PHPReq\Scanner\NodeInspector' => 'PHPReq\Scanner\NodeInspector'
+			),
+		);
+
+	    // ----------------------------------------------------------------
+	    // perform the change
+
+		$tree = $this->traverseFile("namespaced_classname_explicit_alias.php");
+
+	    // ----------------------------------------------------------------
+	    // test the results
+
+		$actual = $this->extractFromTree($tree);
+		$this->assertEquals($expected, $actual);
+	}}
