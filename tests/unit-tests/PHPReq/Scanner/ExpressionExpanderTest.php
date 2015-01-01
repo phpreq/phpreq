@@ -90,7 +90,7 @@ class ExpressionExpanderTest extends PHPUnit_Framework_TestCase
 	    // ----------------------------------------------------------------
 	    // perform the change
 
-		$tree = $this->traverseFile("global_classname.php");
+		$tree = $this->traverseFile("instantiates_global_classname.php");
 
 	    // ----------------------------------------------------------------
 	    // test the results
@@ -117,7 +117,7 @@ class ExpressionExpanderTest extends PHPUnit_Framework_TestCase
 	    // ----------------------------------------------------------------
 	    // perform the change
 
-		$tree = $this->traverseFile("namespaced_classname_implicit_alias.php");
+		$tree = $this->traverseFile("instantiates_namespaced_classname_implicit_alias.php");
 
 	    // ----------------------------------------------------------------
 	    // test the results
@@ -144,7 +144,7 @@ class ExpressionExpanderTest extends PHPUnit_Framework_TestCase
 	    // ----------------------------------------------------------------
 	    // perform the change
 
-		$tree = $this->traverseFile("namespaced_classname_explicit_alias.php");
+		$tree = $this->traverseFile("instantiates_namespaced_classname_explicit_alias.php");
 
 	    // ----------------------------------------------------------------
 	    // test the results
@@ -171,7 +171,7 @@ class ExpressionExpanderTest extends PHPUnit_Framework_TestCase
 	    // ----------------------------------------------------------------
 	    // perform the change
 
-		$tree = $this->traverseFile("namespaced_classname_no_import.php");
+		$tree = $this->traverseFile("instantiates_namespaced_classname_no_import.php");
 
 	    // ----------------------------------------------------------------
 	    // test the results
@@ -199,7 +199,7 @@ class ExpressionExpanderTest extends PHPUnit_Framework_TestCase
 	    // perform the change
 
 		echo PHP_EOL . PHP_EOL;
-		$tree = $this->traverseFile("namespaced_classname_name_in_variable.php");
+		$tree = $this->traverseFile("instantiates_namespaced_classname_name_in_variable.php");
 
 	    // ----------------------------------------------------------------
 	    // test the results
