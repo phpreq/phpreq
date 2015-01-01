@@ -81,14 +81,17 @@ class ScanCommand extends Command
         $discovered = array();
         foreach ($filenames as $filename) {
             $this->mergeDiscovered($this->parseFile($filename), $discovered);
-            //$progress->advance();
+            $progress->advance();
         }
 
-        // all done
+        // completed scanning
         $progress->finish();
         $output->writeln('');
 
-        var_dump($discovered);
+        // now, what did we find?
+        foreach ($discovered as $type => $data) {
+            echo "Found " . count($data) . " " . $type . PHP_EOL;
+        }
     }
 
     protected function validatePath($pathToScan)
