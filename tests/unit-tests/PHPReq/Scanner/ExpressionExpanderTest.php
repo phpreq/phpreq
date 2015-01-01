@@ -180,4 +180,32 @@ class ExpressionExpanderTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals($expected, $actual);
 	}
 
+	/**
+	 * @covers PHPReq\Scanner\ExpressionExpander::leaveNode
+	 * @covers PHPReq\Scanner\ExpressionExpander::expandNew
+	 */
+	public function testCanDetectNamespacedClassnameNameInVariable()
+	{
+	    // ----------------------------------------------------------------
+	    // setup your test
+
+		$expected = array(
+			"classes_used" => array (
+				'PHPReq\Scanner\NodeInspector' => 'PHPReq\Scanner\NodeInspector'
+			),
+		);
+
+	    // ----------------------------------------------------------------
+	    // perform the change
+
+		echo PHP_EOL . PHP_EOL;
+		$tree = $this->traverseFile("namespaced_classname_name_in_variable.php");
+
+	    // ----------------------------------------------------------------
+	    // test the results
+
+		$actual = $this->extractFromTree($tree);
+		$this->assertEquals($expected, $actual);
+	}
+
 }

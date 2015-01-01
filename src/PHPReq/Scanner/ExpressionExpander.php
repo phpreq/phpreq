@@ -31,7 +31,10 @@ class ExpressionExpander extends NodeVisitorAbstract
 	private $phpReqNodesToExpand = array(
 		"PhpParser\\Node\\Expr\\MethodCall" => "expandMethodCall",
 		"PhpParser\\Node\\Expr\\New_"       => "expandNew",
+		"PhpParser\\Node\\Expr\\Assign"     => "trackVar",
 	);
+
+	private $trackedVars = array();
 
 	public function leaveNode(Node $node)
 	{
@@ -69,6 +72,45 @@ class ExpressionExpander extends NodeVisitorAbstract
 		}
 		else if ($node->class instanceof \PhpParser\Node\Name) {
 			$node->fqName = $node->class->toString();
+		}
+
+		// at this point, we're hoping to get lucky
+		//
+		// this IF statement will detect a variable that is holding
+		// the name of the class
+		if ($node->class instanceof \PhpParser\Node\Expr\Variable) {
+			$name = $node->class->name;
+			if (!is_string($name)) {
+				$name = $name->toString();
+			}
+
+			// do we know what this variable contains?
+			if (isset($this->trackedVars[$name])) {
+				$node->fqName = $this->trackedVars[$name];
+			}
+		}
+	}
+
+	public function trackVar(Node $node)
+	{
+		$varClass  = get_class($node->var);
+		$exprClass = get_class($node->expr);
+
+		// do we have a variable?
+		switch ($varClass)
+		{
+			case 'PhpParser\Node\Expr\Variable':
+				$name = $node->var->name;
+				if (!is_string($name)) {
+					$name = $node->var->name->toString();
+				}
+
+				// do we have a nice, simple scalar?
+				switch ($exprClass)
+				{
+					case 'PhpParser\Node\Scalar\String':
+						$this->trackedVars[$name] = $node->expr->value;
+				}
 		}
 	}
 }
