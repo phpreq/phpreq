@@ -208,4 +208,38 @@ class ExpressionExpanderTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals($expected, $actual);
 	}
 
+	/**
+	 * @covers PHPReq\Scanner\ExpressionExpander::leaveNode
+	 * @covers PHPReq\Scanner\ExpressionExpander::expandNew
+	 *
+	 * At the time of writing, this test fails due to a difficulty in
+	 * detecting that the class name is built from a concatenation operation
+	 * @see https://github.com/nikic/PHP-Parser/issues/162
+	 */
+	public function testCanDetectNamespacedClassnameNameInConcatenatedVariable()
+	{
+		// remove this when the issue above has been resolved :)
+		$this->markTestSkipped();
+
+	    // ----------------------------------------------------------------
+	    // setup your test
+
+		$expected = array(
+			"classes_used" => array (
+				'PHPReq\Scanner\NodeInspector' => 'PHPReq\Scanner\NodeInspector'
+			),
+		);
+
+	    // ----------------------------------------------------------------
+	    // perform the change
+
+		echo PHP_EOL . PHP_EOL;
+		$tree = $this->traverseFile("namespaced_classname_name_in_concated_variables.php");
+
+	    // ----------------------------------------------------------------
+	    // test the results
+
+		$actual = $this->extractFromTree($tree);
+		$this->assertEquals($expected, $actual);
+	}
 }
