@@ -240,6 +240,33 @@ class ExpressionExpanderTest extends PHPUnit_Framework_TestCase
 	 * @covers PHPReq\Scanner\ExpressionExpander::leaveNode
 	 * @covers PHPReq\Scanner\ExpressionExpander::expandNew
 	 */
+	public function testCanDetectExtendsNamespacedClassnameNoImport()
+	{
+	    // ----------------------------------------------------------------
+	    // setup your test
+
+		$expected = array(
+			"classes_used" => array (
+				'PHPReq\Scanner\NodeInspector' => 'PHPReq\Scanner\NodeInspector'
+			),
+		);
+
+	    // ----------------------------------------------------------------
+	    // perform the change
+
+		$tree = $this->traverseFile("extends_namespaced_classname_no_import.php");
+
+	    // ----------------------------------------------------------------
+	    // test the results
+
+		$actual = $this->extractFromTree($tree);
+		$this->assertEquals($expected, $actual);
+	}
+
+	/**
+	 * @covers PHPReq\Scanner\ExpressionExpander::leaveNode
+	 * @covers PHPReq\Scanner\ExpressionExpander::expandNew
+	 */
 	public function testCanDetectExtendsNamespacedClassnameImplicitAlias()
 	{
 	    // ----------------------------------------------------------------
