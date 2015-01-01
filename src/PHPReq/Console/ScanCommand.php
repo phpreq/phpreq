@@ -32,6 +32,8 @@ use PhpParser\Lexer\Emulative;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
 
+use PHPReq\Scanner\NodeInspector;
+
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
@@ -75,14 +77,17 @@ class ScanCommand extends Command
         $progress->start();
 
         // extract a list of what's in the files
+        $discovered = array();
         foreach ($filenames as $filename) {
-            $this->parseFile($filename);
+            $this->mergeDiscovered($this->parseFile($filename), $discovered);
             $progress->advance();
         }
 
         // all done
         $progress->finish();
         $output->writeln('');
+
+        var_dump($discovered);
     }
 
     protected function validatePath($pathToScan)
@@ -123,6 +128,23 @@ class ScanCommand extends Command
         // what is inside it?
         $treeTrav = new NodeTraverser();
         $treeTrav->addVisitor(new NameResolver);
+        $inspector = new NodeInspector();
+        $inspector->initInspector();
+        $treeTrav->addVisitor($inspector);
         $parseTree = $treeTrav->traverse($parseTree);
+
+        return $inspector->getDiscovered();
+    }
+
+    protected function mergeDiscovered($input, &$output)
+    {
+        foreach ($input as $type => $list) {
+            foreach ($list as $name) {
+                if (!isset($output[$type])) {
+                    $output[$type] = array();
+                }
+                $output[$type][$name] = $name;
+            }
+        }
     }
 }
