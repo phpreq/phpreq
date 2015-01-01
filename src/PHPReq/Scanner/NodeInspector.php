@@ -33,13 +33,7 @@ class NodeInspector extends NodeVisitorAbstract
 
 	public function initInspector()
 	{
-		$this->discovered = array(
-			"classes" => array(),
-			"constants" => array(),
-			"functions_called" => array(),
-			"functions_declared" => array(),
-			"interfaces" => array(),
-		);
+		$this->discovered = array();
 	}
 
 	public function leaveNode(Node $node)
@@ -48,6 +42,24 @@ class NodeInspector extends NodeVisitorAbstract
 
 		switch($className)
 		{
+			// classes
+			case "PhpParser\\Node\\Expr\\MethodCall":
+				// fqName is set by our ExpressionExpander
+				if (isset($node->fqName)) {
+					$name = $node->fqName;
+					$this->discovered["methods_called"][$name] = $name;
+				}
+				break;
+
+			case "PhpParser\\Node\\Expr\\New_":
+				// fqName is set by our ExpressionExpander
+				if (isset($node->fqName)) {
+					$name = $node->fqName;
+					$this->discovered["classes_used"][$name] = $name;
+				}
+				break;
+
+			// functions
 			case "PhpParser\\Node\\Expr\\FuncCall":
 				if ($node->name instanceof \PhpParser\Node\Name) {
 					$name = $node->name->toString();

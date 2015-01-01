@@ -32,6 +32,7 @@ use PhpParser\Lexer\Emulative;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
 
+use PHPReq\Scanner\ExpressionExpander;
 use PHPReq\Scanner\NodeInspector;
 
 use Symfony\Component\Console\Command\Command;
@@ -80,7 +81,7 @@ class ScanCommand extends Command
         $discovered = array();
         foreach ($filenames as $filename) {
             $this->mergeDiscovered($this->parseFile($filename), $discovered);
-            $progress->advance();
+            //$progress->advance();
         }
 
         // all done
@@ -125,14 +126,24 @@ class ScanCommand extends Command
         $parser = new Parser(new Emulative);
         $parseTree = $parser->parse(file_get_contents($filename));
 
-        // what is inside it?
+        // these helpers will change the parse tree, to
+        // make it a fuck-tonne easier to inspect later on
+        //
+        // we assume that the order matters here :)
         $treeTrav = new NodeTraverser();
         $treeTrav->addVisitor(new NameResolver);
+        $treeTrav->addVisitor(new ExpressionExpander);
+
+        // finally, we add our inspector, to make sense of
+        // everything we've seen / done to the tree
         $inspector = new NodeInspector();
         $inspector->initInspector();
         $treeTrav->addVisitor($inspector);
+
+        // let's see what's in there!
         $parseTree = $treeTrav->traverse($parseTree);
 
+        // all done
         return $inspector->getDiscovered();
     }
 
