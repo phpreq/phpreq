@@ -344,5 +344,4 @@ class ExpressionExpanderTest extends PHPUnit_Framework_TestCase
 		$actual = $this->extractFromTree($tree);
 		$this->assertEquals($expected, $actual);
 	}
-
 }
